@@ -1,31 +1,93 @@
+import dotenv from "dotenv";
+dotenv.config();
+import { mailOptions, transporter } from "../libs/emailConfig.js";
 import { User } from "../models/user.js";
-import nodemailer from 'nodemailer'
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 /* Sign up new users */
 export const register = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
-
+  console.log("hi");
   try {
-    const newUser = new User({
-      email,
+    const { firstName, lastName, email, password } = req.body;
+    const salt = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(password, salt);
+
+    const user = await User.create({
       firstName,
       lastName,
-      password,
+      email,
+      password: hashPassword,
     });
 
-    await newUser.save().then(() => {
-      res.status(201).json({
+    if (user) {
+      /* SENDING AN EMAIL WITH THE VERIFICATION LINK */
+      const verificationLink = `${process.env.FRONTEND_URL}/verify`;
+      const emailText = `
+      <p>Hello,</p>
+      <p>Please click the link below to verify your email:</p>
+      <a href="${verificationLink}" >Verify</a>
+      <p>If you didn't request this verification, please ignore this email.</p>
+    `;
+
+      const verificationEmail = transporter.sendMail(
+        mailOptions(emailText, "Email Verification", user.email),
+        (err, success) => {
+          if (err) {
+            console.log(err.message);
+          }
+        }
+      );
+
+      delete user.password;
+      return res.status(201).json({
         success: true,
-        message: "User created",
+        data: user,
       });
-    });
-
+    }
   } catch (error) {
-    res.status(500).json({
-      success: false,
+    return res.status(500).json({
       message: error.message,
     });
   }
 };
 
 /* logging in a user */
-export const login = async (req, res) => {};
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({
+      email: email,
+    });
+
+    if (user) {
+      /* COMPARE PASSWORD */
+      const comparedPassword = bcrypt.compareSync(password, user.password);
+      if (comparedPassword) {
+        const token = jwt.sign({
+          id: user._id,
+          email: user.email,
+        }, process.env.SECRET_KEY);
+
+        res.status(200).json({
+          accessToken: token,
+        });
+      } else {
+        res.status().json({
+          message: "wrong password!!!",
+        });
+      }
+    } else {
+      res.status(404).json({
+        message: "User not found",
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({
+      message: "something went wrong",
+    });
+  }
+};
+
+/*  */

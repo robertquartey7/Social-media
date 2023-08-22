@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const friend = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -13,22 +20,23 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
+    is_verified: {
+      type: String,
+      default: false,
+    },
+    resetToken: String,
+    resetTokenExpiry: Date,
+    friends: [friend],
   },
   {
     timestamps: true,
   }
 );
 
-const friends = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-});
-
-export const User = mongoose.Model("User", userSchema);
+export const User = mongoose.model("User", userSchema);

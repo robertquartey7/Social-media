@@ -6,10 +6,18 @@ import setupJWTStrategy from "./auth/index.js";
 import passport from "passport";
 import cors from "cors";
 import morgan from "morgan";
+import authRoutes from "./routes/authentication.js";
+import userRoutes from "./routes/user.js";
 export const app = express();
 
 app.use(express.json());
-app.use(cors);
+app.use(
+  cors({
+    origin: "*", // Replace with your frontend's origin
+    methods: ["GET", "POST", "OPTIONS"], // Add any other HTTP methods your app uses
+    allowedHeaders: ["Content-Type", "Authorization"], // Add headers your app sends
+  })
+);
 
 /* MONGOOSE SETUP */
 mongoose
@@ -21,6 +29,7 @@ mongoose
     console.log("connected");
   })
   .catch((err) => {
+    console.log(err.message);
     console.log("connection failed");
   });
 
@@ -29,7 +38,9 @@ mongoose
 setupJWTStrategy(passport);
 
 app.use("/api", morgan("tiny"));
+app.use("/api", authRoutes);
+app.use("/api", userRoutes);
 
 app.get("/api", (req, res) => {
-  res.send("welcome to McChat");
+  return res.json("welcome to McChat");
 });
