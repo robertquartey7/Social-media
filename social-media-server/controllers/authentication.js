@@ -17,6 +17,7 @@ export const register = async (req, res) => {
       lastName,
       email,
       password: hashPassword,
+      is_active: true,
     });
 
     if (user) {

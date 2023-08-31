@@ -26,8 +26,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    is_active: {
+      type: Boolean,
+      default: false,
+    },
     is_verified: {
-      type: String,
+      type: Boolean,
       default: false,
     },
     resetToken: String,

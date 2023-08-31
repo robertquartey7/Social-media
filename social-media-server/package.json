@@ -23,7 +23,7 @@
     "nodemailer": "^6.9.4",
     "nodemon": "^3.0.1",
     "passport": "^0.6.0",
-    "passport-jwt": "^4.0.1"
-  },
-  "devDependencies": {}
+    "passport-jwt": "^4.0.1",
+    "stripe": "^13.3.0"
+  }
 }

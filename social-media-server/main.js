@@ -8,6 +8,8 @@ import cors from "cors";
 import morgan from "morgan";
 import authRoutes from "./routes/authentication.js";
 import userRoutes from "./routes/user.js";
+import postRoutes from "./routes/post.js";
+import commentRoutes from "./routes/comment.js";
 export const app = express();
 
 app.use(express.json());
@@ -40,6 +42,8 @@ setupJWTStrategy(passport);
 app.use("/api", morgan("tiny"));
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api", postRoutes);
+app.use("/api", commentRoutes);
 
 app.get("/api", (req, res) => {
   return res.json("welcome to McChat");

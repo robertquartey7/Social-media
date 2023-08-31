@@ -73,13 +73,13 @@ export const updateUser = async (req, res) => {
 };
 
 // DELETE All USERS
-export const deleteUser = async (req, res) => {
+export const deleteUsers = async (req, res) => {
   try {
     const deletedUser = await User.deleteMany();
 
-    if (deleteUser) {
+    if (deletedUser) {
       res.status(200).json({
-        message: deleteUser,
+        message: deletedUser,
       });
     } else {
       res.status(404).json({
@@ -99,9 +99,9 @@ export const deleteOneUser = async (req, res) => {
       _id: req.params.id,
     });
 
-    if (deleteUser) {
+    if (deletedUser) {
       res.status(200).json({
-        message: deleteUser,
+        message: deletedUser,
       });
     } else {
       res.status(404).json({

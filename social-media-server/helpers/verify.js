@@ -18,7 +18,6 @@ const verifyResetPasswordToken = async (req, res, next) => {
         message: "Token has expired",
       });
     }
-
     next();
   } catch (error) {
     console.log(error);
